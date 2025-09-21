@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Informasi Kependudukan & Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        .main-app {
+            display: flex;
+            height: 100vh;
+        }
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <!-- Login Page -->
+    <div id="login-page" class="login-container">
+        <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-sm">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-2">SIDK</h2>
+            <p class="text-center text-gray-500 mb-6">Sistem Informasi Kependudukan</p>
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                    <input type="text" id="username" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2" required>
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2" required>
+                </div>
+                <div id="login-error" class="text-red-500 text-sm hidden">
+                    Username atau password salah.
+                </div>
+                <button type="submit" class="w-full px-4 py-2 mt-6 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors">
+                    Masuk
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="main-app" class="main-app hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-slate-900 text-white flex-shrink-0 flex flex-col p-4 shadow-lg overflow-y-auto">
+            <div class="flex items-center justify-between h-16">
+                <h1 class="text-2xl font-bold">SIDK</h1>
+                <button id="logout-btn" class="text-gray-400 hover:text-gray-200 transition-colors" title="Keluar">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </div>
+            <nav class="mt-8 flex-1">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="#" id="menu-penduduk" class="menu-item flex items-center px-4 py-3 rounded-lg font-medium transition-colors duration-200 hover:bg-slate-700 hover:text-white active-item bg-slate-700 text-white">
+                            <i class="fa-solid fa-users w-6 mr-3 text-center"></i>
+                            <span>Penduduk</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" id="menu-layanan-surat" class="menu-item flex items-center px-4 py-3 rounded-lg font-medium transition-colors duration-200 hover:bg-slate-700 hover:text-white">
+                            <i class="fa-solid fa-envelope w-6 mr-3 text-center"></i>
+                            <span>Layanan Surat</span>
+                        </a>
+                        <ul class="ml-8 mt-2 space-y-1 hidden" id="submenu-layanan-surat">
+                            <li><a href="#" id="submenu-template-surat" class="menu-item block px-4 py-2 text-sm text-gray-300 rounded-lg hover:bg-slate-800 hover:text-white">Template Surat</a></li>
+                            <li><a href="#" id="submenu-arsip-surat" class="menu-item block px-4 py-2 text-sm text-gray-300 rounded-lg hover:bg-slate-800 hover:text-white">Arsip Surat Tercetak</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#" id="menu-setting" class="menu-item flex items-center px-4 py-3 rounded-lg font-medium transition-colors duration-200 hover:bg-slate-700 hover:text-white">
+                            <i class="fa-solid fa-gear w-6 mr-3 text-center"></i>
+                            <span>Pengaturan</span>
+                        </a>
+                        <ul class="ml-8 mt-2 space-y-1 hidden" id="submenu-setting">
+                            <li><a href="#" id="submenu-kode-surat" class="menu-item block px-4 py-2 text-sm text-gray-300 rounded-lg hover:bg-slate-800 hover:text-white">Set Kode Surat</a></li>
+                            <li><a href="#" id="submenu-nomor-awal" class="menu-item block px-4 py-2 text-sm text-gray-300 rounded-lg hover:bg-slate-800 hover:text-white">Nomor Awal Surat</a></li>
+                            <li><a href="#" id="submenu-set-pengguna" class="menu-item block px-4 py-2 text-sm text-gray-300 rounded-lg hover:bg-slate-800 hover:text-white">Set Pengguna</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main id="main-content" class="flex-1 overflow-y-auto p-8">
+            <!-- Content will be injected here -->
+        </main>
+    </div>
+    
+    <!-- Modal for Edit/Add Population -->
+    <div id="modal-penduduk" class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto transform transition-all">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="modal-title" class="text-xl font-bold text-gray-800">Tambah Data Penduduk</h3>
+                <button onclick="closeModal('modal-penduduk')" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <i class="fa-solid fa-xmark text-2xl"></i>
+                </button>
+            </div>
+            <form id="penduduk-form" class="space-y-4">
+                <input type="hidden" id="penduduk-id">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Form Fields -->
+                    <div>
+                        <label for="nik" class="block text-sm font-medium text-gray-700">NIK</label>
+                        <input type="text" id="nik" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2">
+                    </div>
+                    <div>
+                        <label for="nokk" class="block text-sm font-medium text-gray-700">No KK</label>
+                        <input type="text" id="nokk" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2">
+                    </div>
+                    <div>
+                        <label for="nama" class="block text-sm font-medium text-gray-700">Nama</label>
+                        <input type="text" id="nama" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2">
+                    </div>
+                    <div>
+                        <label for="tempatlahir" class="block text-sm font-medium text-gray-700">Tempat Lahir</label>
+                        <input type="text" id="tempatlahir" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2">
+                    </div>
+                    <div>
+                        <label for="tgllahir" class="block text-sm font-medium text-gray-700">Tgl Lahir</label>
+                        <input type="date" id="tgllahir" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2">
+                    </div>
+                    <div>
+                        <label for="jeniskelamin" class="block text-sm font-medium text-gray-700">Jenis Kelamin</label>
+                        <select id="jeniskelamin" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2">
+                            <option>Laki-laki</option>
+                            <option>Perempuan</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="dusun" class="block text-sm font-medium text-gray-700">Dusun</label>
+                        <input type="text" id="dusun" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2">
+                    </div>
+                    <div>
+                        <label for="rt" class="block text-sm font-medium text-gray-700">RT</label>
+                        <input type="text" id="rt" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2">
+                    </div>
+                    <div>
+                        <label for="rw" class="block text-sm font-medium text-gray-700">RW</label>
+                        <input type="text" id="rw" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2">
+                    </div>
+                    <div>
+                        <label for="desa" class="block text-sm font-medium text-gray-700">Desa</label>
+                        <input type="text" id="desa" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2">
+                    </div>
+                    <div>
+                        <label for="kecamatan" class="block text-sm font-medium text-gray-700">Kecamatan</label>
+                        <input type="text" id="kecamatan" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2">
+                    </div>
+                    <div>
+                        <label for="kabupaten" class="block text-sm font-medium text-gray-700">Kabupaten</label>
+                        <input type="text" id="kabupaten" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2">
+                    </div>
+                    <div>
+                        <label for="provinsi" class="block text-sm font-medium text-gray-700">Provinsi</label>
+                        <input type="text" id="provinsi" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2">
+                    </div>
+                    <div>
+                        <label for="agama" class="block text-sm font-medium text-gray-700">Agama</label>
+                        <input type="text" id="agama" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2">
+                    </div>
+                    <div>
+                        <label for="pekerjaan" class="block text-sm font-medium text-gray-700">Pekerjaan</label>
+                        <input type="text" id="pekerjaan" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2">
+                    </div>
+                    <div>
+                        <label for="pendidikan" class="block text-sm font-medium text-gray-700">Pendidikan</label>
+                        <input type="text" id="pendidikan" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2">
+                    </div>
+                    <div>
+                        <label for="goldarah" class="block text-sm font-medium text-gray-700">Gol. Darah</label>
+                        <input type="text" id="goldarah" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2">
+                    </div>
+                    <div>
+                        <label for="statusperkawinan" class="block text-sm font-medium text-gray-700">Status Perkawinan</label>
+                        <input type="text" id="statusperkawinan" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2">
+                    </div>
+                    <div>
+                        <label for="shdk" class="block text-sm font-medium text-gray-700">SHDK</label>
+                        <input type="text" id="shdk" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2">
+                    </div>
+                    <div>
+                        <label for="namaayah" class="block text-sm font-medium text-gray-700">Nama Ayah</label>
+                        <input type="text" id="namaayah" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2">
+                    </div>
+                    <div>
+                        <label for="namaibu" class="block text-sm font-medium text-gray-700">Nama Ibu</label>
+                        <input type="text" id="namaibu" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2">
+                    </div>
+                    <div>
+                        <label for="noaktalahir" class="block text-sm font-medium text-gray-700">No. Akta Lahir</label>
+                        <input type="text" id="noaktalahir" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2">
+                    </div>
+                    <div>
+                        <label for="noaktanika" class="block text-sm font-medium text-gray-700">No. Akta Nikah</label>
+                        <input type="text" id="noaktanika" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2">
+                    </div>
+                    <div>
+                        <label for="tglnikah" class="block text-sm font-medium text-gray-700">Tgl Nikah</label>
+                        <input type="date" id="tglnikah" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2">
+                    </div>
+                    <div>
+                        <label for="noaktacerai" class="block text-sm font-medium text-gray-700">No. Akta Cerai</label>
+                        <input type="text" id="noaktacerai" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2">
+                    </div>
+                    <div>
+                        <label for="tglcerai" class="block text-sm font-medium text-gray-700">Tgl Cerai</label>
+                        <input type="date" id="tglcerai" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2">
+                    </div>
+                    <div>
+                        <label for="disabilitas" class="block text-sm font-medium text-gray-700">Disabilitas</label>
+                        <input type="text" id="disabilitas" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2">
+                    </div>
+
+                    <!-- Uploads -->
+                    <div class="lg:col-span-3 border-t pt-4">
+                        <h4 class="text-base font-semibold text-gray-800 mb-2">Unggah Dokumen</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label for="fotoupload" class="block text-sm font-medium text-gray-700">Unggah Foto</label>
+                                <input type="file" id="fotoupload" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                                <span class="text-xs text-gray-500 mt-1 block">Max 2MB</span>
+                            </div>
+                            <div>
+                                <label for="kkupload" class="block text-sm font-medium text-gray-700">Unggah Dokumen KK (PDF)</label>
+                                <input type="file" id="kkupload" accept="application/pdf" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                            </div>
+                            <div>
+                                <label for="ktpupload" class="block text-sm font-medium text-gray-700">Unggah Dokumen KTP (PDF)</label>
+                                <input type="file" id="ktpupload" accept="application/pdf" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end pt-4 border-t mt-4 space-x-2">
+                    <button type="button" onclick="closeModal('modal-penduduk')" class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 transition-colors">Batal</button>
+                    <button type="submit" class="px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors">Simpan Data</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="modal-confirm" class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-96 transform transition-all">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Konfirmasi Hapus</h3>
+            <p class="text-gray-700 mb-6">Apakah Anda yakin ingin menghapus data ini?</p>
+            <div class="flex justify-end space-x-2">
+                <button onclick="closeModal('modal-confirm')" class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 transition-colors">Batal</button>
+                <button id="confirm-delete-btn" class="px-4 py-2 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition-colors">Hapus</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        const loginPage = document.getElementById('login-page');
+        const mainApp = document.getElementById('main-app');
+        const loginForm = document.getElementById('login-form');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const loginError = document.getElementById('login-error');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        let isLoggedIn = false;
+        const validUsername = 'admin';
+        const validPassword = 'password';
+
+        // --- Core UI Functions ---
+        function renderApp() {
+            if (isLoggedIn) {
+                loginPage.classList.add('hidden');
+                mainApp.classList.remove('hidden');
+                // Render the initial page content after login
+                renderPenduduk();
+            } else {
+                loginPage.classList.remove('hidden');
+                mainApp.classList.add('hidden');
+                loginForm.reset();
+                loginError.classList.add('hidden');
+            }
+        }
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = usernameInput.value;
+            const password = passwordInput.value;
+
+            if (username === validUsername && password === validPassword) {
+                isLoggedIn = true;
+                renderApp();
+            } else {
+                loginError.classList.remove('hidden');
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            isLoggedIn = false;
+            renderApp();
+        });
+
+
+        // --- Existing Functions from the previous script ---
+        const sidebar = document.querySelector('aside');
+        const mainContent = document.getElementById('main-content');
+        const menuItems = document.querySelectorAll('.menu-item');
+        const menuLayananSurat = document.getElementById('menu-layanan-surat');
+        const submenuLayananSurat = document.getElementById('submenu-layanan-surat');
+        const menuSetting = document.getElementById('menu-setting');
+        const submenuSetting = document.getElementById('submenu-setting');
+        const modalPenduduk = document.getElementById('modal-penduduk');
+        const modalConfirm = document.getElementById('modal-confirm');
+        const pendudukForm = document.getElementById('penduduk-form');
+        const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+
+        // --- Simulated Data (In a real app, this would come from Google Sheets API) ---
+        let dataPenduduk = [
+            { id: 1, nik: '3204212903900001', nokk: '3204212903900001', nama: 'Budi Santoso', tempatLahir: 'Bandung', tglLahir: '1990-03-29', jk: 'Laki-laki', dusun: 'Cidahu', rt: '01', rw: '01', desa: 'Sukajaya', kec: 'Cicalengka', kab: 'Bandung', propinsi: 'Jawa Barat', agama: 'Islam', pekerjaan: 'Pegawai Swasta', pendidikan: 'S1', golDarah: 'A', statusKawin: 'Kawin', shdk: 'Kepala Keluarga', namaAyah: 'Slamet', namaIbu: 'Siti', noAktaLahir: '', noAktaNikah: '123/2015', tglNikah: '2015-05-10', noAktaCerai: '', tglCerai: '', disabilitas: '' },
+            { id: 2, nik: '3204212903900002', nokk: '3204212903900001', nama: 'Ani Ramadhania', tempatLahir: 'Bandung', tglLahir: '1992-12-15', jk: 'Perempuan', dusun: 'Cidahu', rt: '01', rw: '01', desa: 'Sukajaya', kec: 'Cicalengka', kab: 'Bandung', propinsi: 'Jawa Barat', agama: 'Islam', pekerjaan: 'Ibu Rumah Tangga', pendidikan: 'SMA', golDarah: 'B', statusKawin: 'Kawin', shdk: 'Istri', namaAyah: 'Ujang', namaIbu: 'Fatma', noAktaLahir: '', noAktaNikah: '123/2015', tglNikah: '2015-05-10', noAktaCerai: '', tglCerai: '', disabilitas: '' },
+            { id: 3, nik: '3204212903900003', nokk: '3204212903900001', nama: 'Sari Santoso', tempatLahir: 'Bandung', tglLahir: '2018-08-20', jk: 'Perempuan', dusun: 'Cidahu', rt: '01', rw: '01', desa: 'Sukajaya', kec: 'Cicalengka', kab: 'Bandung', propinsi: 'Jawa Barat', agama: 'Islam', pekerjaan: 'Pelajar', pendidikan: 'SD', golDarah: 'O', statusKawin: 'Belum Kawin', shdk: 'Anak', namaAyah: 'Budi Santoso', namaIbu: 'Ani Ramadhania', noAktaLahir: '12345/2018', noAktaNikah: '', tglNikah: '', noAktaCerai: '', tglCerai: '', disabilitas: '' },
+            { id: 4, nik: '3204212903900004', nokk: '3204212903900002', nama: 'Joko Prabowo', tempatLahir: 'Surabaya', tglLahir: '1985-01-10', jk: 'Laki-laki', dusun: 'Soka', rt: '02', rw: '01', desa: 'Cibiru', kec: 'Cileunyi', kab: 'Bandung', propinsi: 'Jawa Barat', agama: 'Kristen', pekerjaan: 'Wiraswasta', pendidikan: 'S2', golDarah: 'AB', statusKawin: 'Kawin', shdk: 'Kepala Keluarga', namaAyah: 'Bambang', namaIbu: 'Ida', noAktaLahir: '', noAktaNikah: '456/2012', tglNikah: '2012-11-25', noAktaCerai: '', tglCerai: '', disabilitas: '' },
+        ];
+        let dataTemplateSurat = [
+            { id: 1, jenisSurat: 'Surat Keterangan Usaha', deskripsi: 'Surat untuk keperluan usaha' },
+            { id: 2, jenisSurat: 'Surat Domisili', deskripsi: 'Surat keterangan domisili' },
+            { id: 3, jenisSurat: 'Surat Kematian', deskripsi: 'Surat keterangan kematian' },
+        ];
+        let dataArsipSurat = [
+            { id: 1, nomorSurat: '470/12/SKU/2023', jenisSurat: 'Surat Keterangan Usaha', atasNama: 'Budi Santoso', nik: '3204212903900001', tglCetak: '2023-09-20', urlSurat: '#' },
+            { id: 2, nomorSurat: '470/13/SKT/2023', jenisSurat: 'Surat Domisili', atasNama: 'Joko Prabowo', nik: '3204212903900004', tglCetak: '2023-09-21', urlSurat: '#' },
+            { id: 3, nomorSurat: '470/14/SKU/2023', jenisSurat: 'Surat Keterangan Usaha', atasNama: 'Ani Ramadhania', nik: '3204212903900002', tglCetak: '2023-09-22', urlSurat: '#' },
+        ];
+        let dataKodeSurat = [
+            { id: 1, jenisSurat: 'Surat Keterangan Usaha', kode: 'SKU', isianTambahan: 'Jenis Usaha, Lokasi Usaha' },
+            { id: 2, jenisSurat: 'Surat Domisili', kode: 'SKT', isianTambahan: '' },
+        ];
+        let nomorAwalSurat = 15;
+        let pengguna = [{ id: 1, nama: 'Admin Desa', email: 'admin@desa.id' }];
+
+        // Variables for pagination
+        let currentPage = 1;
+        let rowsPerPage = 10;
+        let currentSearchQuery = '';
+
+        // --- Core UI Functions ---
+        function setActive(elementId) {
+            menuItems.forEach(item => {
+                item.classList.remove('bg-slate-700', 'text-white');
+                item.classList.add('text-gray-300', 'hover:bg-slate-700', 'hover:text-white');
+            });
+            const activeItem = document.getElementById(elementId);
+            if (activeItem) {
+                activeItem.classList.remove('text-gray-300', 'hover:bg-slate-700', 'hover:text-white');
+                activeItem.classList.add('bg-slate-700', 'text-white');
+            }
+        }
+
+        function showModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.add('hidden');
+        }
+
+        function renderPenduduk() {
+            setActive('menu-penduduk');
+            const content = `
+                <div class="bg-white rounded-xl shadow p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Data Penduduk</h2>
+
+                    <!-- Top Controls -->
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0 md:space-x-4">
+                        <div class="flex-grow w-full md:w-auto">
+                            <div class="relative rounded-md shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+                                </div>
+                                <input type="text" id="search-penduduk" class="block w-full rounded-md border-gray-300 pl-10 pr-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500" placeholder="Cari berdasarkan NIK, Nama, atau No KK">
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button class="px-4 py-2 bg-green-600 text-white font-medium rounded-lg shadow hover:bg-green-700 transition-colors">
+                                <i class="fa-solid fa-file-excel mr-2"></i> Cetak Excel
+                            </button>
+                            <button class="px-4 py-2 bg-red-600 text-white font-medium rounded-lg shadow hover:bg-red-700 transition-colors">
+                                <i class="fa-solid fa-file-pdf mr-2"></i> Cetak PDF
+                            </button>
+                            <button id="tambah-penduduk-btn" class="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg shadow hover:bg-blue-700 transition-colors">
+                                <i class="fa-solid fa-plus mr-2"></i> Tambah Data
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Pagination & Display Count -->
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center space-x-2 text-sm text-gray-600">
+                            <span>Tampilkan:</span>
+                            <select id="rows-per-page" class="rounded-md border-gray-300 shadow-sm p-1 text-sm focus:ring-blue-500 focus:border-blue-500">
+                                <option value="10">10 Baris</option>
+                                <option value="20">20 Baris</option>
+                                <option value="50">50 Baris</option>
+                                <option value="100">100 Baris</option>
+                                <option value="all">Semua</option>
+                            </select>
+                        </div>
+                        <div id="pagination-controls" class="flex space-x-2 items-center">
+                            <!-- Pagination will be injected here -->
+                        </div>
+                    </div>
+
+                    <!-- Data Table -->
+                    <div class="overflow-x-auto rounded-lg shadow-sm">
+                        <table class="min-w-full bg-white border-collapse">
+                            <thead>
+                                <tr class="bg-gray-200 text-gray-600 uppercase text-xs leading-normal">
+                                    <th class="py-3 px-6 text-left">NIK</th>
+                                    <th class="py-3 px-6 text-left">No KK</th>
+                                    <th class="py-3 px-6 text-left">Nama</th>
+                                    <th class="py-3 px-6 text-left">Tempat/Tgl Lahir</th>
+                                    <th class="py-3 px-6 text-left">JK</th>
+                                    <th class="py-3 px-6 text-left">Alamat</th>
+                                    <th class="py-3 px-6 text-left">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="penduduk-table-body" class="text-gray-700 text-sm font-light">
+                                <!-- Table rows will be injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="no-data" class="text-center text-gray-500 py-8 hidden">
+                        Tidak ada data yang ditemukan.
+                    </div>
+                </div>
+            `;
+            mainContent.innerHTML = content;
+            
+            document.getElementById('tambah-penduduk-btn').onclick = () => openPendudukModal();
+            document.getElementById('search-penduduk').addEventListener('input', (e) => {
+                currentSearchQuery = e.target.value;
+                currentPage = 1;
+                renderPendudukTable();
+            });
+            document.getElementById('rows-per-page').addEventListener('change', (e) => {
+                rowsPerPage = e.target.value === 'all' ? dataPenduduk.length : parseInt(e.target.value);
+                currentPage = 1;
+                renderPendudukTable();
+            });
+
+            renderPendudukTable();
+        }
+
+        function renderPendudukTable() {
+            const tableBody = document.getElementById('penduduk-table-body');
+            const noDataMessage = document.getElementById('no-data');
+            const searchQuery = currentSearchQuery.toLowerCase();
+            
+            // Filter data based on search query
+            const filteredData = dataPenduduk.filter(p =>
+                p.nik.toLowerCase().includes(searchQuery) ||
+                p.nokk.toLowerCase().includes(searchQuery) ||
+                p.nama.toLowerCase().includes(searchQuery)
+            );
+
+            if (filteredData.length === 0) {
+                noDataMessage.classList.remove('hidden');
+                tableBody.innerHTML = '';
+                return;
+            }
+            noDataMessage.classList.add('hidden');
+
+            // Paginate the filtered data
+            const startIndex = (currentPage - 1) * rowsPerPage;
+            const paginatedData = rowsPerPage === 'all' ? filteredData : filteredData.slice(startIndex, startIndex + rowsPerPage);
+            
+            let tableRows = '';
+            paginatedData.forEach(p => {
+                tableRows += `
+                    <tr class="border-b border-gray-200 hover:bg-gray-100">
+                        <td class="py-3 px-6 text-left">${p.nik}</td>
+                        <td class="py-3 px-6 text-left">${p.nokk}</td>
+                        <td class="py-3 px-6 text-left whitespace-nowrap">${p.nama}</td>
+                        <td class="py-3 px-6 text-left whitespace-nowrap">${p.tempatLahir}, ${p.tglLahir}</td>
+                        <td class="py-3 px-6 text-left">${p.jk}</td>
+                        <td class="py-3 px-6 text-left">${p.dusun}, RT ${p.rt}/RW ${p.rw}</td>
+                        <td class="py-3 px-6 text-left whitespace-nowrap">
+                            <div class="flex item-center">
+                                <button onclick="openPendudukModal(${p.id})" class="w-8 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white transition-colors flex items-center justify-center mr-2" title="Edit">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                                <button onclick="confirmDeletePenduduk(${p.id})" class="w-8 h-8 rounded-full bg-red-500 hover:bg-red-600 text-white transition-colors flex items-center justify-center" title="Hapus">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            tableBody.innerHTML = tableRows;
+
+            // Render pagination controls
+            const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+            const paginationControls = document.getElementById('pagination-controls');
+            if (totalPages > 1 && rowsPerPage !== dataPenduduk.length) {
+                let paginationHtml = '';
+                paginationHtml += `<button onclick="goToPage(${currentPage - 1})" class="px-3 py-1 rounded-lg bg-gray-200 font-medium hover:bg-gray-300 transition-colors ${currentPage === 1 ? 'cursor-not-allowed opacity-50' : ''}" ${currentPage === 1 ? 'disabled' : ''}>Prev</button>`;
+                paginationHtml += `<span class="text-sm text-gray-700 mx-2">Halaman ${currentPage} dari ${totalPages}</span>`;
+                paginationHtml += `<button onclick="goToPage(${currentPage + 1})" class="px-3 py-1 rounded-lg bg-gray-200 font-medium hover:bg-gray-300 transition-colors ${currentPage === totalPages ? 'cursor-not-allowed opacity-50' : ''}" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>`;
+                paginationControls.innerHTML = paginationHtml;
+            } else {
+                paginationControls.innerHTML = '';
+            }
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            renderPendudukTable();
+        }
+
+        function openPendudukModal(id = null) {
+            const title = document.getElementById('modal-title');
+            const form = document.getElementById('penduduk-form');
+            form.reset();
+            document.getElementById('penduduk-id').value = '';
+
+            if (id) {
+                title.textContent = 'Edit Data Penduduk';
+                const data = dataPenduduk.find(p => p.id === id);
+                if (data) {
+                    document.getElementById('penduduk-id').value = data.id;
+                    document.getElementById('nik').value = data.nik;
+                    document.getElementById('nokk').value = data.nokk;
+                    document.getElementById('nama').value = data.nama;
+                    document.getElementById('tempatlahir').value = data.tempatLahir;
+                    document.getElementById('tgllahir').value = data.tglLahir;
+                    document.getElementById('jeniskelamin').value = data.jk;
+                    document.getElementById('dusun').value = data.dusun;
+                    document.getElementById('rt').value = data.rt;
+                    document.getElementById('rw').value = data.rw;
+                    document.getElementById('desa').value = data.desa;
+                    document.getElementById('kecamatan').value = data.kec;
+                    document.getElementById('kabupaten').value = data.kab;
+                    document.getElementById('provinsi').value = data.propinsi;
+                    document.getElementById('agama').value = data.agama;
+                    document.getElementById('pekerjaan').value = data.pekerjaan;
+                    document.getElementById('pendidikan').value = data.pendidikan;
+                    document.getElementById('goldarah').value = data.golDarah;
+                    document.getElementById('statusperkawinan').value = data.statusKawin;
+                    document.getElementById('shdk').value = data.shdk;
+                    document.getElementById('namaayah').value = data.namaAyah;
+                    document.getElementById('namaibu').value = data.namaIbu;
+                    document.getElementById('noaktalahir').value = data.noAktaLahir;
+                    document.getElementById('noaktanika').value = data.noAktaNikah;
+                    document.getElementById('tglnikah').value = data.tglNikah;
+                    document.getElementById('noaktacerai').value = data.noAktaCerai;
+                    document.getElementById('tglcerai').value = data.tglCerai;
+                    document.getElementById('disabilitas').value = data.disabilitas;
+                }
+            } else {
+                title.textContent = 'Tambah Data Penduduk';
+            }
+            showModal('modal-penduduk');
+        }
+
+        pendudukForm.onsubmit = (e) => {
+            e.preventDefault();
+            const id = document.getElementById('penduduk-id').value;
+            const newData = {
+                nik: document.getElementById('nik').value,
+                nokk: document.getElementById('nokk').value,
+                nama: document.getElementById('nama').value,
+                tempatLahir: document.getElementById('tempatlahir').value,
+                tglLahir: document.getElementById('tgllahir').value,
+                jk: document.getElementById('jeniskelamin').value,
+                dusun: document.getElementById('dusun').value,
+                rt: document.getElementById('rt').value,
+                rw: document.getElementById('rw').value,
+                desa: document.getElementById('desa').value,
+                kec: document.getElementById('kecamatan').value,
+                kab: document.getElementById('kabupaten').value,
+                propinsi: document.getElementById('provinsi').value,
+                agama: document.getElementById('agama').value,
+                pekerjaan: document.getElementById('pekerjaan').value,
+                pendidikan: document.getElementById('pendidikan').value,
+                golDarah: document.getElementById('goldarah').value,
+                statusKawin: document.getElementById('statusperkawinan').value,
+                shdk: document.getElementById('shdk').value,
+                namaAyah: document.getElementById('namaayah').value,
+                namaIbu: document.getElementById('namaibu').value,
+                noAktaLahir: document.getElementById('noaktalahir').value,
+                noAktaNikah: document.getElementById('noaktanika').value,
+                tglNikah: document.getElementById('tglnikah').value,
+                noAktaCerai: document.getElementById('noaktacerai').value,
+                tglCerai: document.getElementById('tglcerai').value,
+                disabilitas: document.getElementById('disabilitas').value,
+            };
+
+            // This is where you would send data to Google Sheets API
+            if (id) {
+                // UPDATE
+                const index = dataPenduduk.findIndex(p => p.id === parseInt(id));
+                if (index !== -1) {
+                    dataPenduduk[index] = { ...dataPenduduk[index], ...newData };
+                    console.log('Data updated:', dataPenduduk[index]);
+                }
+            } else {
+                // ADD
+                const newId = dataPenduduk.length ? Math.max(...dataPenduduk.map(p => p.id)) + 1 : 1;
+                const newPerson = { id: newId, ...newData };
+                dataPenduduk.push(newPerson);
+                console.log('Data added:', newPerson);
+            }
+            
+            // Re-render table and close modal
+            renderPendudukTable();
+            closeModal('modal-penduduk');
+        };
+
+        let dataToDeleteId = null;
+        function confirmDeletePenduduk(id) {
+            dataToDeleteId = id;
+            showModal('modal-confirm');
+        }
+
+        confirmDeleteBtn.onclick = () => {
+            if (dataToDeleteId) {
+                // This is where you would send delete request to Google Sheets API
+                dataPenduduk = dataPenduduk.filter(p => p.id !== dataToDeleteId);
+                console.log('Data deleted for ID:', dataToDeleteId);
+                renderPendudukTable();
+                dataToDeleteId = null;
+                closeModal('modal-confirm');
+            }
+        };
+
+        function renderLayananSurat() {
+            setActive('menu-layanan-surat');
+            const content = `
+                <div class="bg-white rounded-xl shadow p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Layanan Surat</h2>
+                    <p class="text-gray-600">Pilih sub-menu untuk melihat detail.</p>
+                </div>
+            `;
+            mainContent.innerHTML = content;
+        }
+
+        function renderTemplateSurat() {
+            setActive('submenu-template-surat');
+            const tableRows = dataTemplateSurat.map(t => `
+                <tr class="border-b border-gray-200 hover:bg-gray-100">
+                    <td class="py-3 px-6 text-left">${t.jenisSurat}</td>
+                    <td class="py-3 px-6 text-left">${t.deskripsi}</td>
+                    <td class="py-3 px-6 text-left whitespace-nowrap">
+                        <button class="w-8 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white transition-colors flex items-center justify-center mr-2" title="Edit">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button class="w-8 h-8 rounded-full bg-red-500 hover:bg-red-600 text-white transition-colors flex items-center justify-center" title="Hapus">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            mainContent.innerHTML = `
+                <div class="bg-white rounded-xl shadow p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Template Surat</h2>
+                    <div class="overflow-x-auto rounded-lg shadow-sm">
+                        <table class="min-w-full bg-white border-collapse">
+                            <thead>
+                                <tr class="bg-gray-200 text-gray-600 uppercase text-xs leading-normal">
+                                    <th class="py-3 px-6 text-left">Jenis Surat</th>
+                                    <th class="py-3 px-6 text-left">Deskripsi</th>
+                                    <th class="py-3 px-6 text-left">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-700 text-sm font-light">${tableRows}</tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderArsipSurat() {
+            setActive('submenu-arsip-surat');
+            const suratCount = dataArsipSurat.reduce((acc, curr) => {
+                acc[curr.jenisSurat] = (acc[curr.jenisSurat] || 0) + 1;
+                return acc;
+            }, {});
+
+            const summaryHtml = Object.entries(suratCount).map(([jenis, count]) => `
+                <li class="bg-blue-50 rounded-lg p-4 flex items-center justify-between text-blue-700">
+                    <span class="font-medium">${jenis}</span>
+                    <span class="text-xl font-bold">${count}</span>
+                </li>
+            `).join('');
+
+            const tableRows = dataArsipSurat.map(s => `
+                <tr class="border-b border-gray-200 hover:bg-gray-100">
+                    <td class="py-3 px-6 text-left">${s.nomorSurat}</td>
+                    <td class="py-3 px-6 text-left">${s.jenisSurat}</td>
+                    <td class="py-3 px-6 text-left">${s.atasNama} (${s.nik})</td>
+                    <td class="py-3 px-6 text-left">${s.tglCetak}</td>
+                    <td class="py-3 px-6 text-left"><a href="${s.urlSurat}" target="_blank" class="text-blue-500 hover:underline">Lihat Surat</a></td>
+                </tr>
+            `).join('');
+
+            mainContent.innerHTML = `
+                <div class="bg-white rounded-xl shadow p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Arsip Surat Tercetak</h2>
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-4">Jumlah Surat per Jenis</h3>
+                        <ul class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">${summaryHtml}</ul>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-700 mb-4">Semua Surat Tercetak</h3>
+                    <div class="overflow-x-auto rounded-lg shadow-sm">
+                        <table class="min-w-full bg-white border-collapse">
+                            <thead>
+                                <tr class="bg-gray-200 text-gray-600 uppercase text-xs leading-normal">
+                                    <th class="py-3 px-6 text-left">Nomor Surat</th>
+                                    <th class="py-3 px-6 text-left">Jenis Surat</th>
+                                    <th class="py-3 px-6 text-left">Atas Nama (NIK)</th>
+                                    <th class="py-3 px-6 text-left">Tgl Cetak</th>
+                                    <th class="py-3 px-6 text-left">URL Surat</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-700 text-sm font-light">${tableRows}</tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderSetting() {
+            setActive('menu-setting');
+            const content = `
+                <div class="bg-white rounded-xl shadow p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Pengaturan</h2>
+                    <p class="text-gray-600">Pilih sub-menu untuk mengatur sistem.</p>
+                </div>
+            `;
+            mainContent.innerHTML = content;
+        }
+
+        function renderSetKodeSurat() {
+            setActive('submenu-kode-surat');
+            const tableRows = dataKodeSurat.map(k => `
+                <tr class="border-b border-gray-200 hover:bg-gray-100">
+                    <td class="py-3 px-6 text-left">${k.jenisSurat}</td>
+                    <td class="py-3 px-6 text-left">${k.kode}</td>
+                    <td class="py-3 px-6 text-left">${k.isianTambahan || '-'}</td>
+                    <td class="py-3 px-6 text-left whitespace-nowrap">
+                        <button class="w-8 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white transition-colors flex items-center justify-center mr-2" title="Edit">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button class="w-8 h-8 rounded-full bg-red-500 hover:bg-red-600 text-white transition-colors flex items-center justify-center" title="Hapus">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            
+            mainContent.innerHTML = `
+                <div class="bg-white rounded-xl shadow p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Set Kode Surat</h2>
+                    <button class="mb-4 px-4 py-2 bg-blue-600 text-white font-medium rounded-lg shadow hover:bg-blue-700 transition-colors">
+                        <i class="fa-solid fa-plus mr-2"></i> Tambah Kode Surat
+                    </button>
+                    <div class="overflow-x-auto rounded-lg shadow-sm">
+                        <table class="min-w-full bg-white border-collapse">
+                            <thead>
+                                <tr class="bg-gray-200 text-gray-600 uppercase text-xs leading-normal">
+                                    <th class="py-3 px-6 text-left">Jenis Surat</th>
+                                    <th class="py-3 px-6 text-left">Kode Surat</th>
+                                    <th class="py-3 px-6 text-left">Isian Tambahan</th>
+                                    <th class="py-3 px-6 text-left">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-700 text-sm font-light">${tableRows}</tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderNomorAwal() {
+            setActive('submenu-nomor-awal');
+            mainContent.innerHTML = `
+                <div class="bg-white rounded-xl shadow p-6 max-w-md">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Nomor Awal Surat</h2>
+                    <p class="text-gray-700 mb-4">Nomor awal ini akan digunakan sebagai basis untuk penomoran surat otomatis.</p>
+                    <div class="flex items-center space-x-2">
+                        <label for="nomor-awal" class="font-medium text-gray-700">Nomor Saat Ini:</label>
+                        <span id="nomor-saat-ini" class="text-xl font-semibold text-blue-600">${nomorAwalSurat}</span>
+                    </div>
+                    <form onsubmit="event.preventDefault(); updateNomorAwal(event)" class="mt-4 flex items-center space-x-2">
+                        <input type="number" id="nomor-awal-input" value="${nomorAwalSurat}" class="w-24 p-2 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">Simpan</button>
+                    </form>
+                </div>
+            `;
+        }
+
+        function updateNomorAwal(e) {
+            const input = document.getElementById('nomor-awal-input');
+            nomorAwalSurat = parseInt(input.value);
+            document.getElementById('nomor-saat-ini').textContent = nomorAwalSurat;
+            console.log('Nomor awal surat diperbarui menjadi:', nomorAwalSurat);
+        }
+
+        function renderSetPengguna() {
+            setActive('submenu-set-pengguna');
+            const tableRows = pengguna.map(p => `
+                <tr class="border-b border-gray-200 hover:bg-gray-100">
+                    <td class="py-3 px-6 text-left">${p.nama}</td>
+                    <td class="py-3 px-6 text-left">${p.email}</td>
+                    <td class="py-3 px-6 text-left whitespace-nowrap">
+                        <button class="w-8 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white transition-colors flex items-center justify-center mr-2" title="Edit">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button class="w-8 h-8 rounded-full bg-red-500 hover:bg-red-600 text-white transition-colors flex items-center justify-center" title="Hapus">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            mainContent.innerHTML = `
+                <div class="bg-white rounded-xl shadow p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Set Pengguna</h2>
+                    <button class="mb-4 px-4 py-2 bg-blue-600 text-white font-medium rounded-lg shadow hover:bg-blue-700 transition-colors">
+                        <i class="fa-solid fa-plus mr-2"></i> Tambah Pengguna
+                    </button>
+                    <div class="overflow-x-auto rounded-lg shadow-sm">
+                        <table class="min-w-full bg-white border-collapse">
+                            <thead>
+                                <tr class="bg-gray-200 text-gray-600 uppercase text-xs leading-normal">
+                                    <th class="py-3 px-6 text-left">Nama</th>
+                                    <th class="py-3 px-6 text-left">Email</th>
+                                    <th class="py-3 px-6 text-left">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-700 text-sm font-light">${tableRows}</tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- Event Listeners for Navigation ---
+        menuLayananSurat.addEventListener('click', (e) => {
+            e.preventDefault();
+            const isExpanded = !submenuLayananSurat.classList.contains('hidden');
+            submenuLayananSurat.classList.toggle('hidden');
+            if (isExpanded) renderLayananSurat();
+            else renderTemplateSurat();
+        });
+
+        menuSetting.addEventListener('click', (e) => {
+            e.preventDefault();
+            const isExpanded = !submenuSetting.classList.contains('hidden');
+            submenuSetting.classList.toggle('hidden');
+            if (isExpanded) renderSetting();
+            else renderSetKodeSurat();
+        });
+
+        document.getElementById('menu-penduduk').addEventListener('click', (e) => {
+            e.preventDefault();
+            renderPenduduk();
+            // Collapse submenus
+            submenuLayananSurat.classList.add('hidden');
+            submenuSetting.classList.add('hidden');
+        });
+        document.getElementById('submenu-template-surat').addEventListener('click', (e) => {
+            e.preventDefault();
+            renderTemplateSurat();
+        });
+        document.getElementById('submenu-arsip-surat').addEventListener('click', (e) => {
+            e.preventDefault();
+            renderArsipSurat();
+        });
+        document.getElementById('submenu-kode-surat').addEventListener('click', (e) => {
+            e.preventDefault();
+            renderSetKodeSurat();
+        });
+        document.getElementById('submenu-nomor-awal').addEventListener('click', (e) => {
+            e.preventDefault();
+            renderNomorAwal();
+        });
+        document.getElementById('submenu-set-pengguna').addEventListener('click', (e) => {
+            e.preventDefault();
+            renderSetPengguna();
+        });
+
+        // Initial render
+        renderApp();
+    </script>
+</body>
+</html>
